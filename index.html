@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="so">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Final Exam Results System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="auth-screen" id="authScreen">
+      <div class="auth-card">
+        <div class="brand auth-brand">
+          <div class="brand-mark" id="authBrandMark">R</div>
+          <div>
+            <strong>SULTAN TECH</strong>
+            <span>Sultan Results Portal</span>
+          </div>
+        </div>
+
+        <div class="portal-tabs" role="tablist" aria-label="Choose portal">
+          <button class="portal-tab active" id="adminTab" type="button" data-portal="admin" data-icon="A">Admin</button>
+          <button class="portal-tab" id="studentTab" type="button" data-portal="student" data-icon="S">Student</button>
+        </div>
+
+        <form class="portal-form active" id="adminLoginForm">
+          <div>
+            <h1>Admin login</h1>
+          </div>
+          <label>
+            Username
+            <input id="adminUsername" autocomplete="username" required placeholder="admin" />
+          </label>
+          <label>
+            Password
+            <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="admin123" />
+          </label>
+          <button class="primary-btn" type="submit">Open dashboard</button>
+        </form>
+
+        <form class="portal-form" id="studentLookupForm">
+          <div>
+            <h1>Tira-taxanaha Ardeyga</h1>
+          </div>
+          <label>
+            Geli ID-ga ama tira-taxanaha
+            <input id="studentLookupId" required placeholder="Tusaale: 123" />
+          </label>
+          <button class="primary-btn" type="submit">Guji Halakan</button>
+        </form>
+
+        <footer class="system-footer" id="authFooter"></footer>
+      </div>
+    </section>
+
+    <section class="student-portal hidden" id="studentPortal">
+      <header class="student-header">
+        <div class="brand">
+          <div class="brand-mark" id="studentBrandMark">R</div>
+          <div>
+            <strong id="studentSchoolName">SULTAN TECH</strong>
+            <span id="studentPortalYear">Final exam result</span>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="studentBackBtn" type="button">Back</button>
+          <button class="primary-btn" id="studentPrintBtn" type="button">Print</button>
+        </div>
+      </header>
+      <main class="student-main">
+        <article class="result-slip" id="studentResultSlip"></article>
+      </main>
+      <footer class="system-footer page-footer" id="studentFooter"></footer>
+    </section>
+
+    <div class="app-shell hidden" id="adminApp">
+      <aside class="sidebar" aria-label="Navigation">
+        <div class="brand">
+          <div class="brand-mark" id="adminBrandMark">R</div>
+          <div>
+            <strong>ResultPro</strong>
+            <span>Final exam system</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-link active" data-view="dashboard" data-icon="D" type="button">Dashboard</button>
+          <button class="nav-link" data-view="students" data-icon="ST" type="button">Students</button>
+          <button class="nav-link" data-view="subjects" data-icon="SB" type="button">Subjects</button>
+          <button class="nav-link" data-view="results" data-icon="R" type="button">Results</button>
+          <button class="nav-link" data-view="reports" data-icon="RP" type="button">Reports</button>
+          <button class="nav-link" data-view="settings" data-icon="SE" type="button">Settings</button>
+        </nav>
+
+        <div class="sidebar-note">
+          <span class="status-dot"></span>
+          <p>Admin mode. Data is saved locally on this browser.</p>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Academic year <span id="yearLabel"></span></p>
+            <h1 id="viewTitle">Dashboard</h1>
+          </div>
+          <div class="top-actions">
+            <button class="ghost-btn" id="exportBtn" type="button" title="Export CSV">Export</button>
+            <button class="ghost-btn" id="downloadJsonBtn" type="button" title="Download backup">Backup</button>
+            <button class="primary-btn" id="printBtn" type="button" title="Print report">Print</button>
+            <button class="ghost-btn" id="logoutBtn" type="button" title="Logout">Logout</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboardView">
+          <div class="metrics-grid">
+            <article class="metric">
+              <span>Total students</span>
+              <strong id="metricStudents">0</strong>
+            </article>
+            <article class="metric">
+              <span>Subjects</span>
+              <strong id="metricSubjects">0</strong>
+            </article>
+            <article class="metric">
+              <span>Pass rate</span>
+              <strong id="metricPassRate">0%</strong>
+            </article>
+            <article class="metric">
+              <span>Class average</span>
+              <strong id="metricAverage">0</strong>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Top students</h2>
+                <span>Ranked by average</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Name</th>
+                      <th>Class</th>
+                      <th>Average</th>
+                      <th>Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topStudentsBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Grade distribution</h2>
+                <span>Final result summary</span>
+              </div>
+              <div class="grade-bars" id="gradeBars"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="studentsView">
+          <div class="workspace-grid">
+            <form class="panel form-panel" id="studentForm">
+              <div class="panel-header">
+                <h2>Add student</h2>
+                <span>Registration details</span>
+              </div>
+              <label>
+                Full name
+                <input id="studentName" required placeholder="e.g. Ayaan Hassan" />
+              </label>
+              <label>
+                Roll number
+                <input id="studentRoll" required placeholder="e.g. F-001" />
+              </label>
+              <label>
+                Class
+                <input id="studentClass" required placeholder="e.g. Form 4A" />
+              </label>
+              <label>
+                Mother's name
+                <input id="studentMother" required placeholder="e.g. Fadumo Ali" />
+              </label>
+              <div class="top-actions">
+                <button class="primary-btn" type="submit">Save student</button>
+                <button id="resetBtn" class="danger-btn" type="button">Reset demo</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-header controls-row">
+                <div>
+                  <h2>Student list</h2>
+                  <span>Search, edit, and remove records</span>
+                </div>
+                <input class="search" id="studentSearch" placeholder="Search students..." />
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Roll</th>
+                      <th>Name</th>
+                      <th>Mother</th>
+                      <th>Class</th>
+                      <th>Average</th>
+                      <th>Finance</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentsBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="subjectsView">
+          <div class="workspace-grid">
+            <form class="panel form-panel" id="subjectForm">
+              <div class="panel-header">
+                <h2>Add subject</h2>
+                <span>Exam subject setup</span>
+              </div>
+              <label>
+                Subject name
+                <input id="subjectName" required placeholder="e.g. Mathematics" />
+              </label>
+              <label>
+                Max score
+                <input id="subjectMax" type="number" min="1" max="500" value="100" required />
+              </label>
+              <div>
+                <button class="primary-btn" type="submit">Save subject</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Subjects</h2>
+                <span>Used for final averages</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Max score</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subjectsBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="resultsView">
+          <div class="panel">
+            <div class="panel-header controls-row">
+              <div>
+                <h2>Enter marks</h2>
+                <span>Final exam score sheet</span>
+              </div>
+              <label>
+                Student
+                <select id="resultStudentSelect" aria-label="Select student"></select>
+              </label>
+            </div>
+            <form class="marks-grid" id="marksForm"></form>
+          </div>
+        </section>
+
+        <section class="view" id="reportsView">
+          <div class="panel">
+            <div class="panel-header controls-row">
+              <div>
+                <h2>Final results</h2>
+                <span>Generate slips and publishable summary</span>
+              </div>
+              <input class="search" id="reportSearch" placeholder="Search results..." />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead id="reportsHead"></thead>
+                <tbody id="reportsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="settingsView">
+          <div class="settings-layout">
+            <form class="panel form-panel" id="schoolForm">
+              <div class="panel-header">
+                <h2>School profile</h2>
+                <span>Printed on report slips</span>
+              </div>
+              <label>
+                School name
+                <input id="schoolName" required />
+              </label>
+              <label>
+                Academic year
+                <input id="academicYear" required />
+              </label>
+              <label>
+                Principal
+                <input id="principalName" required />
+              </label>
+              <label>
+                Call center
+                <input id="callCenter" placeholder="+252 61 0000000" />
+              </label>
+              <label>
+                WhatsApp
+                <input id="whatsappNumber" placeholder="+252 61 0000000" />
+              </label>
+              <label>
+                Email
+                <input id="contactEmail" type="email" placeholder="office@example.com" />
+              </label>
+              <label>
+                Facebook
+                <input id="facebookPage" placeholder="Facebook page name" />
+              </label>
+              <label>
+                Address
+                <input id="schoolAddress" placeholder="School address" />
+              </label>
+
+              <h3 style="margin-top:12px">Logos</h3>
+
+              <label>
+                System / profile logo
+                <input id="systemLogoInput" type="file" accept="image/*" />
+              </label>
+              <div class="logo-preview-row" style="align-items:center;gap:12px">
+                <div id="settingsSystemLogoPreview" class="logo-preview brand-mark">R</div>
+                <button id="removeSystemLogoBtn" class="ghost-btn" type="button">Remove system logo</button>
+              </div>
+
+              <label style="margin-top:8px;">
+                School logo
+                <input id="schoolLogoInput" type="file" accept="image/*" />
+              </label>
+              <div class="logo-preview-row" style="align-items:center;gap:12px">
+                <div id="settingsLogoPreview" class="logo-preview brand-mark">R</div>
+                <button id="removeLogoBtn" class="ghost-btn" type="button">Remove logo</button>
+              </div>
+
+              <label>
+                Admin username
+                <input id="settingsAdminUsername" required autocomplete="username" />
+              </label>
+              <label>
+                Admin password
+                <input id="settingsAdminPassword" type="password" required autocomplete="new-password" />
+              </label>
+
+              <div style="margin-top:12px">
+                <button class="primary-btn" type="submit">Save settings</button>
+                <button id="downloadJsonBtn" class="ghost-btn" type="button">Download backup</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Data tools</h2>
+                <span>Backup and reset</span>
+              </div>
+              <div class="tool-list">
+                <label class="file-control">
+                  Restore backup
+                  <input id="restoreInput" type="file" accept="application/json" />
+                </label>
+                <button class="danger-btn" id="resetBtn" type="button">Reset demo data</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <footer class="system-footer page-footer" id="adminFooter"></footer>
+      </main>
+    </div>
+
+    <div class="modal hidden" id="slipModal" role="dialog" aria-modal="true" aria-labelledby="slipTitle">
+      <div class="modal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div>
+            <button id="printSlipBtn" class="primary-btn">Print slip</button>
+          </div>
+          <div>
+            <button id="closeSlipBtn" class="ghost-btn">Close</button>
+          </div>
+        </div>
+
+        <article class="result-slip" id="resultSlip"></article>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
